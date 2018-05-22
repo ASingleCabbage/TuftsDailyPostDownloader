@@ -71,6 +71,9 @@
             </item>
             <item row="0" column="3">
              <widget class="QRadioButton" name="orderRelRB">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
