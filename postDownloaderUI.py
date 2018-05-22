@@ -48,6 +48,7 @@ class Ui_PostDownloader(object):
         self.orderDateRB.setObjectName("orderDateRB")
         self.gridLayout_3.addWidget(self.orderDateRB, 0, 0, 1, 1)
         self.orderRelRB = QtWidgets.QRadioButton(self.orderByGroup)
+        self.orderRelRB.setEnabled(False)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
