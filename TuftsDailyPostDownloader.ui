@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>733</width>
-    <height>510</height>
+    <height>509</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,222 @@
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
      <layout class="QGridLayout" name="optionsGrid">
+      <item row="3" column="1" rowspan="2">
+       <widget class="QGroupBox" name="catFilterGroup">
+        <property name="title">
+         <string>Category Filter</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QPlainTextEdit" name="catTextEdit">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="0" rowspan="3">
+       <widget class="QGroupBox" name="postCountGroup">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="title">
+         <string>Post Count</string>
+        </property>
+        <layout class="QFormLayout" name="formLayout">
+         <item row="1" column="0">
+          <widget class="QRadioButton" name="onlyRB">
+           <property name="text">
+            <string>Only the first</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QSpinBox" name="postCount">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="maximum">
+            <number>2147483647</number>
+           </property>
+           <property name="value">
+            <number>100</number>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QRadioButton" name="allRB">
+           <property name="text">
+            <string>All posts</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="1" rowspan="3">
+       <widget class="QGroupBox" name="dateFilterGroup">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="title">
+         <string>Date Filter</string>
+        </property>
+        <layout class="QFormLayout" name="formLayout_2">
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="postsAfterCheckBox">
+           <property name="text">
+            <string>Get Posts After</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QDateEdit" name="afterDateEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="postsBeforeCheckBox">
+           <property name="text">
+            <string>Get Posts Before</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QDateEdit" name="beforeDateEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="3" column="0" rowspan="2">
+       <widget class="QGroupBox" name="tagFilterGroup">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="title">
+         <string>Tag Filter</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="QPlainTextEdit" name="tagTextEdit">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QGroupBox" name="saveLocGroup">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="title">
+         <string>File Save Location</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="1">
+          <widget class="QPushButton" name="pathEditButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Change</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QTextBrowser" name="pathTextEdit">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
       <item row="5" column="0">
+       <widget class="QGroupBox" name="searchTermGroup">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="acceptDrops">
+         <bool>false</bool>
+        </property>
+        <property name="title">
+         <string>Search Term</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QPlainTextEdit" name="searchTextEdit"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="6" column="0">
        <widget class="QGroupBox" name="orderingGroup">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -190,186 +405,59 @@
         </layout>
        </widget>
       </item>
-      <item row="3" column="1" rowspan="2">
-       <widget class="QGroupBox" name="catFilterGroup">
+      <item row="6" column="1">
+       <widget class="QGroupBox" name="additionalGroup">
         <property name="title">
-         <string>Category Filter</string>
+         <string>Additional Options</string>
         </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_4">
+        <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <widget class="QPlainTextEdit" name="catTextEdit">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
+          <widget class="QCheckBox" name="postProcessCheckBox">
+           <property name="toolTip">
+            <string/>
            </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QGroupBox" name="saveLocGroup">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="title">
-         <string>File Save Location</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="1">
-          <widget class="QPushButton" name="pathEditButton">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
+           <property name="toolTipDuration">
+            <number>-1</number>
            </property>
            <property name="text">
-            <string>Change</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QTextBrowser" name="pathTextEdit">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="3" column="0" rowspan="2">
-       <widget class="QGroupBox" name="tagFilterGroup">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="title">
-         <string>Tag Filter</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_5">
-         <item>
-          <widget class="QPlainTextEdit" name="tagTextEdit">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="0" column="0" rowspan="3">
-       <widget class="QGroupBox" name="postCountGroup">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="title">
-         <string>Post Count</string>
-        </property>
-        <layout class="QFormLayout" name="formLayout">
-         <item row="1" column="0">
-          <widget class="QRadioButton" name="onlyRB">
-           <property name="text">
-            <string>Only the first</string>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QSpinBox" name="postCount">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="maximum">
-            <number>2147483647</number>
-           </property>
-           <property name="value">
-            <number>100</number>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QRadioButton" name="allRB">
-           <property name="text">
-            <string>All posts</string>
+            <string>Enable post processing</string>
            </property>
            <property name="checked">
             <bool>true</bool>
            </property>
           </widget>
          </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="0" column="1" rowspan="3">
-       <widget class="QGroupBox" name="dateFilterGroup">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="title">
-         <string>Date Filter</string>
-        </property>
-        <layout class="QFormLayout" name="formLayout_2">
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="postsAfterCheckBox">
-           <property name="text">
-            <string>Get Posts After</string>
+         <item>
+          <widget class="QGroupBox" name="filesGroup">
+           <property name="title">
+            <string>Download Additional Files</string>
            </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QDateEdit" name="afterDateEdit">
-           <property name="enabled">
-            <bool>false</bool>
+           <property name="flat">
+            <bool>true</bool>
            </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QCheckBox" name="postsBeforeCheckBox">
-           <property name="text">
-            <string>Get Posts Before</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QDateEdit" name="beforeDateEdit">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QPushButton" name="downloadCatButton">
+              <property name="text">
+               <string>Categories</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="downloadTagButton">
+              <property name="text">
+               <string>Tags</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="csvConvertCheckBox">
+              <property name="text">
+               <string>Also convert to CSV</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
@@ -557,8 +645,8 @@
    <slot>setOutputOrder()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>64</x>
-     <y>405</y>
+     <x>75</x>
+     <y>401</y>
     </hint>
     <hint type="destinationlabel">
      <x>76</x>
@@ -573,8 +661,8 @@
    <slot>setOutputOrder()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>133</x>
-     <y>405</y>
+     <x>164</x>
+     <y>401</y>
     </hint>
     <hint type="destinationlabel">
      <x>162</x>
@@ -589,8 +677,8 @@
    <slot>setOutputOrder()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>193</x>
-     <y>405</y>
+     <x>213</x>
+     <y>401</y>
     </hint>
     <hint type="destinationlabel">
      <x>201</x>
@@ -605,8 +693,8 @@
    <slot>setOutputOrder()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>177</x>
-     <y>428</y>
+     <x>213</x>
+     <y>424</y>
     </hint>
     <hint type="destinationlabel">
      <x>183</x>
@@ -621,8 +709,8 @@
    <slot>setOutputOrder()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>145</x>
-     <y>428</y>
+     <x>149</x>
+     <y>424</y>
     </hint>
     <hint type="destinationlabel">
      <x>130</x>
@@ -637,8 +725,8 @@
    <slot>setOutputOrder()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>46</x>
-     <y>428</y>
+     <x>76</x>
+     <y>424</y>
     </hint>
     <hint type="destinationlabel">
      <x>264</x>
@@ -653,8 +741,8 @@
    <slot>setOutputOrder()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>288</x>
-     <y>428</y>
+     <x>311</x>
+     <y>424</y>
     </hint>
     <hint type="destinationlabel">
      <x>317</x>
@@ -669,8 +757,8 @@
    <slot>setOutputOrder()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>284</x>
-     <y>405</y>
+     <x>317</x>
+     <y>401</y>
     </hint>
     <hint type="destinationlabel">
      <x>308</x>
@@ -749,8 +837,8 @@
    <slot>setOutputPath()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>690</x>
-     <y>401</y>
+     <x>712</x>
+     <y>319</y>
     </hint>
     <hint type="destinationlabel">
      <x>730</x>
@@ -801,7 +889,7 @@
      <y>86</y>
     </hint>
     <hint type="destinationlabel">
-     <x>735</x>
+     <x>732</x>
      <y>56</y>
     </hint>
    </hints>
@@ -818,7 +906,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>671</x>
-     <y>-1</y>
+     <y>0</y>
     </hint>
    </hints>
   </connection>
@@ -833,7 +921,7 @@
      <y>91</y>
     </hint>
     <hint type="destinationlabel">
-     <x>733</x>
+     <x>732</x>
      <y>100</y>
     </hint>
    </hints>
@@ -870,6 +958,102 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>searchTermGroup</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>orderRelRB</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>72</x>
+     <y>239</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>125</x>
+     <y>398</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>searchTermGroup</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>orderDateRB</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>14</x>
+     <y>293</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>45</x>
+     <y>390</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>downloadCatButton</sender>
+   <signal>clicked()</signal>
+   <receiver>PostDownloader</receiver>
+   <slot>downloadCats()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>437</x>
+     <y>420</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>730</x>
+     <y>427</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>downloadTagButton</sender>
+   <signal>clicked()</signal>
+   <receiver>PostDownloader</receiver>
+   <slot>downloadTags()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>565</x>
+     <y>416</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>578</x>
+     <y>483</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>csvConvertCheckBox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>PostDownloader</receiver>
+   <slot>setCsvConvert()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>604</x>
+     <y>417</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>679</x>
+     <y>487</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>postProcessCheckBox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>PostDownloader</receiver>
+   <slot>setPostProcessing()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>485</x>
+     <y>369</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>485</x>
+     <y>485</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>setCatFilter()</slot>
@@ -885,5 +1069,9 @@
   <slot>updateDateFilter()</slot>
   <slot>launchGithubPage()</slot>
   <slot>launchHelpPage()</slot>
+  <slot>downloadTags()</slot>
+  <slot>downloadCats()</slot>
+  <slot>setCsvConvert()</slot>
+  <slot>setPostProcessing()</slot>
  </slots>
 </ui>
