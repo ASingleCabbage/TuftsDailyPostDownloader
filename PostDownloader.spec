@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['app.py'],
-             pathex=['/Users/Daniel/Documents/GitHub/TuftsDailyPostDownloader'],
+             pathex=['C:\\Github\\TDPostDownloader'],
              binaries=[],
              datas=[],
              hiddenimports=[],
