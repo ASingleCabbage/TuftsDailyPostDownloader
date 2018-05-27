@@ -10,9 +10,9 @@ class AppWindow(Ui_PostDownloader, QMainWindow):
         self.ui = Ui_PostDownloader()
         self.ui.setupUi(self)
 
-        defOutName = 'output.json'
-        defOutFullPath = os.path.join(os.getcwd(), defOutName)
-        self.ui.pathTextEdit.setPlainText(defOutFullPath)
+        # defOutName = 'output.json'
+        # defOutFullPath = os.path.join(os.getcwd(), defOutName)
+        # self.ui.pathTextEdit.setPlainText(defOutFullPath)
 
         self.__query = queryBuilder(self)
         #might want to get all starting states by code (single point of truth?)
@@ -21,7 +21,7 @@ class AppWindow(Ui_PostDownloader, QMainWindow):
         self.__query.tagFilterRaw = self.ui.tagTextEdit.toPlainText()
         self.__query.startDate = self.ui.afterDateEdit.date().toPyDate().isoformat()
         self.__query.endDate = self.ui.beforeDateEdit.date().toPyDate().isoformat()
-        self.__query.outputFullPath = defOutFullPath
+        # self.__query.outputFullPath = defOutFullPath
 
         #TODO: should move everything UI based here
         self.__query.downloader.postProcessor.dumpCompleteSignal.connect(self.dumpCompleteCallback)
@@ -112,6 +112,12 @@ class AppWindow(Ui_PostDownloader, QMainWindow):
             self.__query.outputFullPath = fileName
 
     def executeDownload(self):
+        if(self.__query.outputFullPath == None):
+            self.setOutputPath()
+            if(self.__query.outputFullPath == None):
+                self.printStatus('You must specify an output file to start the download')
+                return
+
         self.ui.progressBar.setValue(0)
         self.ui.execButton.setEnabled(False)
         try:
@@ -121,7 +127,6 @@ class AppWindow(Ui_PostDownloader, QMainWindow):
         finally:
             self.ui.execButton.setEnabled(True)
 
-    #TODO: launch file save dialog, and call queryBuilder
     def downloadAdditional(self):
         senderName = self.sender().objectName()
         optionsDict = {'downloadTagButton' : 'tags',

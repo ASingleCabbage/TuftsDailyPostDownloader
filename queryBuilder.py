@@ -68,6 +68,8 @@ class queryBuilder():
                 url.args['tags'] = tagIds.include
             if(tagIds.exclude):
                 url.args['tags_exclude'] = tagIds.exclude
+        if(self.searchTermEnabled):
+            url.args['search'] = self.searchTerm
         return url
 
     #TODO: adapt filter parsing to work with real names

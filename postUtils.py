@@ -83,6 +83,8 @@ class PostDownloader:
             print('Error: no posts found with the given parameter')
             raise ValueError('No posts found with the given parameter')
 
+        print('{} posts found'.format(info.totalPosts))
+
         self.totalRequests = math.ceil(min(info.totalPosts, self.targetPostCount) / 100)
         self.netManager.finished.connect(handler)
         url.args['per_page'] = 100
