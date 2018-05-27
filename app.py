@@ -25,6 +25,7 @@ class AppWindow(Ui_PostDownloader, QMainWindow):
 
         #TODO: should move everything UI based here
         self.__query.downloader.postProcessor.dumpCompleteSignal.connect(self.dumpCompleteCallback)
+        self.__query.downloader.additionalPostProcessor.dumpCompleteSignal.connect(self.dumpCompleteCallback)
 
         #translating button names to valid endpoint parameters
         self.outputOptionDict = {'orderAuthorRB' : 'author',
@@ -68,6 +69,15 @@ class AppWindow(Ui_PostDownloader, QMainWindow):
         else:
             self.printStatus('Unknown object {} invoked setDateFilter'.format(objName), 2000)
 
+    def setSearchTerm(self, isEnabled):
+        self.__query.searchTermEnabled = isEnabled
+
+    def setCsvConvert(self, isEnabled):
+        self.__query.convertCsvEnabled = isEnabled
+
+    def setPostProcessing(self, isEnabled):
+        self.__query.postProcessEnabled = isEnabled
+
     def updateDateFilter(self):
         objName = self.sender().objectName()
         if(objName == 'afterDateEdit'):
@@ -90,17 +100,16 @@ class AppWindow(Ui_PostDownloader, QMainWindow):
         assert(self.sender().objectName() == 'tagTextEdit')
         self.__query.tagFilterRaw = self.sender().toPlainText()
 
+    def updateSearchTerm(self):
+        assert(self.sender().objectName() == 'searchTextEdit')
+        self.__query.searchTerm = self.sender().toPlainText()
+
     #TODO: add file extension to save file dialog
     def setOutputPath(self):
-        #welp I just copied and pasted this code ¯\_(ツ)_/¯
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getSaveFileName(self,'Create save file',os.getcwd(),'All Files (*)', options=options)
+        fileName, _ = self.__JSONSaveDialog()
         if fileName:
             self.ui.pathTextEdit.setPlainText(fileName)
             self.__query.outputFullPath = fileName
-        else:
-            self.printStatus('Save file dialog canceled', 2000)
 
     def executeDownload(self):
         self.ui.progressBar.setValue(0)
@@ -112,6 +121,18 @@ class AppWindow(Ui_PostDownloader, QMainWindow):
         finally:
             self.ui.execButton.setEnabled(True)
 
+    #TODO: launch file save dialog, and call queryBuilder
+    def downloadAdditional(self):
+        senderName = self.sender().objectName()
+        optionsDict = {'downloadTagButton' : 'tags',
+                       'downloadCatButton' : 'categories'}
+        assert(senderName in optionsDict)
+        fileName, _ = self.__JSONSaveDialog()
+        if(fileName):
+            self.ui.progressBar.setValue(0)
+            self.ui.execButton.setEnabled(False)
+            self.__query.downloadAdditional(optionsDict[senderName], fileName)
+
     def launchGithubPage(self):
         #github repo
         webbrowser.open_new_tab('https://github.com/ASingleCabbage/TuftsDailyPostDownloader')
@@ -121,6 +142,16 @@ class AppWindow(Ui_PostDownloader, QMainWindow):
         #github wiki
         webbrowser.open_new_tab('https://github.com/ASingleCabbage/TuftsDailyPostDownloader/wiki')
         return
+
+    def __JSONSaveDialog(self):
+        dialog = QFileDialog()
+        dialog.setDefaultSuffix('json')
+        fileName = QFileDialog.getSaveFileName(self,'Save file',os.getcwd(),'JSON (*.json)')
+        if fileName:
+            return fileName
+        else:
+            self.printStatus('Save file dialog canceled', 2000)
+            return ''
 
     def printStatus(self, message, duration=None):
         if(duration == None):

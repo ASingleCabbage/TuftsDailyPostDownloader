@@ -1,4 +1,4 @@
-import os, sys, json, math
+import os, sys, json, math, csv
 import urllib.request
 from bs4 import BeautifulSoup
 from furl import furl
@@ -16,11 +16,16 @@ class PostDownloader:
         self.currentRequest = 0
         self.totalRequests = 0
 
+        self.netManager = QtNetwork.QNetworkAccessManager()
         self.postProcessor = ResponsePostProcessor()
+        self.additionalPostProcessor = AdditionalPostProcessor()
         self.thread = QThread()
         self.postProcessor.cleanProgressSignal.connect(self.cleanProgressCallback)
         self.postProcessor.cleanCompleteSignal.connect(self.cleanCompleteCallback)
         self.postProcessor.dumpCompleteSignal.connect(self.killThread)
+
+        self.additionalPostProcessor.dumpCompleteSignal.connect(self.killThread)
+        self.additionalPostProcessor.cleanCompleteSignal.connect(self.cleanCompleteCallback)
 
     def resetDownloader(self):
         self.currentRequest = 0
@@ -44,13 +49,15 @@ class PostDownloader:
         self.thread.quit()
         # self.thread.wait()
 
-    def __startPostProcessor(self):
+    def __startPP(self, processor, enablePP, connectFunc):
         print('starting post processor')
-        self.postProcessor.saveLocation = self.saveLocation
-        self.postProcessor.jsonList = self.responses_raw
-        self.postProcessor.targetPostCount = self.targetPostCount
+        #TODO: generate post processor on the fly?
+        processor.saveLocation = self.saveLocation
+        processor.jsonList = self.responses_raw
+        processor.targetPostCount = self.targetPostCount
+        processor.enablePP = enablePP
+        self.thread.started.connect(connectFunc)
         self.postProcessor.moveToThread(self.thread)
-        self.thread.started.connect(self.postProcessor.cleanResponseList)
         self.thread.start()
 
     def __probeRequest(self, url):
@@ -58,41 +65,15 @@ class PostDownloader:
         url.args['per_page'] = 1
         connection = urllib.request.urlopen(url.url)
         return RequestInfo(connection.getcode(), int(connection.getheader('x-wp-total')))
-    # url is a furl object
-    # use -1 for no postCount limit
-    def getJsonList(self, url, postCount, saveLocation):
+
+    #sets up relevant parameters for downloading and callback function, then starts first download
+    #subsequent downloads are done by the callback function/handler
+    def __downloadChunk(self, url, handler):
         self.appWindow.ui.statusBar.showMessage('Downloading, this may take a while... ')
         self.resetDownloader()
-        def makeRequest(urlString):
-            self.currentRequest += 1
-            netManager.get(QtNetwork.QNetworkRequest(QUrl(urlString)))
-        def respHandler(reply):
-            if(reply.error() == QtNetwork.QNetworkReply.NoError):
-                response_array = json.loads(str(reply.readAll(), 'utf-8'))
-                self.responses_raw += response_array
-
-                print('Response length: ', len(self.responses_raw))
-                #might be better to send signal to AppWindow and let it handle this?
-                self.appWindow.ui.progressBar.setValue(self.currentRequest / self.totalRequests * 80.0)
-
-                if(len(self.responses_raw) < self.targetPostCount and len(response_array) == 100):
-                    url.args['offset'] += 100
-                    print('Request: ', url.url)
-                    makeRequest(url.url)
-                else:
-                    self.appWindow.ui.statusBar.showMessage('Cleaning up posts, this may take a while... ')
-                    self.__startPostProcessor()
-            else:
-                print('Error occurred: ', reply.error())
-                print(reply().errorString())
-                #TODO: raise exception here and let AppWindow handle it
-
-        assert(postCount >= -1), 'Assertion failed: postCount invalid'
-        if(postCount == -1):
-            postCount = sys.maxsize        #this might be very bad practice D:
-
-        self.saveLocation = saveLocation
-        self.targetPostCount = postCount
+        assert(self.targetPostCount >= -1), 'Assertion failed: postCount invalid'
+        if(self.targetPostCount == -1):
+            self.targetPostCount = sys.maxsize        #this might be very bad practice D:
 
         info = self.__probeRequest(url)
         if(info.code != 200):
@@ -102,19 +83,74 @@ class PostDownloader:
             print('Error: no posts found with the given parameter')
             raise ValueError('No posts found with the given parameter')
 
-        print('total requests', math.ceil(min(info.totalPosts, postCount) / 100))
-        self.totalRequests = math.ceil(min(info.totalPosts, postCount) / 100)
-
-        netManager = QtNetwork.QNetworkAccessManager()
-        netManager.finished.connect(respHandler)
-        #iteration = 0
+        self.totalRequests = math.ceil(min(info.totalPosts, self.targetPostCount) / 100)
+        self.netManager.finished.connect(handler)
         url.args['per_page'] = 100
         url.args['offset'] = 0
         print('Request: ', url.url)
-        makeRequest(url.url)
+        self.currentRequest += 1
+        self.netManager.get(QtNetwork.QNetworkRequest(QUrl(url.url)))
+
+
+    def getAdditional(self, url, outfile, convertCsv):
+        self.saveLocation = outfile
+        self.targetPostCount = -1
+        def addRespHandler(reply):
+            if(reply.error() == QtNetwork.QNetworkReply.NoError):
+                response_string = str(reply.readAll(), 'utf-8').strip()
+                if(not response_string):
+                    raise ValueError('Response string is empty')    #this error happens when we call the function a second time D:
+
+                response_array = json.loads(response_string) #not sure why we need strip() here but not in getJsonList
+                self.responses_raw += response_array
+
+                #TODO: might be better to send signal to AppWindow and let it handle this?
+                self.appWindow.ui.progressBar.setValue(self.currentRequest / self.totalRequests * 80.0)
+
+                if(len(response_array) == 100):
+                    url.args['offset'] += 100
+                    print('Request: ', url.url)
+                    self.currentRequest += 1
+                    self.netManager.get(QtNetwork.QNetworkRequest(QUrl(url.url)))
+                else:
+                    self.appWindow.ui.statusBar.showMessage('Cleaning up posts, this may take a while... ')
+                    self.__startPP(self.additionalPostProcessor, convertCsv, self.additionalPostProcessor.cleanResponseList)
+            else:
+                print('Error occurred: ', reply.error())
+                print(reply().errorString())
+                #TODO: raise exception here and let AppWindow handle it
+        self.__downloadChunk(url, addRespHandler)
+
+    # url is a furl object
+    # use -1 for no postCount limit
+    def getJsonList(self, url, postCount, saveLocation, enablePP):
+        self.saveLocation = saveLocation
+        self.targetPostCount = postCount
+        def respHandler(reply):
+            if(reply.error() == QtNetwork.QNetworkReply.NoError):
+                response_array = json.loads(str(reply.readAll(), 'utf-8'))
+                self.responses_raw += response_array
+
+                #TODO: might be better to send signal to AppWindow and let it handle this?
+                self.appWindow.ui.progressBar.setValue(self.currentRequest / self.totalRequests * 80.0)
+
+                if(len(self.responses_raw) < self.targetPostCount and len(response_array) == 100):
+                    url.args['offset'] += 100
+                    print('Request: ', url.url)
+                    self.currentRequest += 1
+                    self.netManager.get(QtNetwork.QNetworkRequest(QUrl(url.url)))
+                else:
+                    self.appWindow.ui.statusBar.showMessage('Cleaning up posts, this may take a while... ')
+                    self.__startPP(self.postProcessor, enablePP, self.postProcessor.cleanResponseList)
+            else:
+                print('Error occurred: ', reply.error())
+                print(reply().errorString())
+                #TODO: raise exception here and let AppWindow handle it
+        self.__downloadChunk(url, respHandler)
+
 
 class ResponsePostProcessor(QObject):
-    cleanProgressSignal = pyqtSignal(float)
+    cleanProgressSignal = pyqtSignal(float)     #currently not used yet
     cleanCompleteSignal = pyqtSignal()
     dumpCompleteSignal = pyqtSignal()
 
@@ -123,6 +159,7 @@ class ResponsePostProcessor(QObject):
         self.saveLocation = None
         self.jsonList = None
         self.targetPostCount = None
+        self.enablePP = True
 
     def __processComplete(self):
         self.saveLocation = None
@@ -134,19 +171,10 @@ class ResponsePostProcessor(QObject):
         soup = BeautifulSoup(raw_html, 'html5lib')
         return soup.get_text()
 
-    def __dumpJsonAry(self, jsons):
+    def __dumpJsonList(self, jsons):
         print('dumping file to ', self.saveLocation)
         file = open(self.saveLocation, 'w', encoding='utf8')
-        file.write('[')
-        for x in jsons:
-            # ensure ascii false so json.dump won't print out escaped unicode
-            json.dump(x, file, indent=4, sort_keys=True, ensure_ascii=False)
-            file.write(',\n')
-        file.seek(0, os.SEEK_END)
-        pos = file.tell() - 3
-        file.seek(pos, os.SEEK_SET)
-        file.truncate()
-        file.write(']')
+        json.dump(jsons, file, indent=4, sort_keys=True, ensure_ascii=False)
         file.close()
         self.__processComplete()
 
@@ -170,27 +198,94 @@ class ResponsePostProcessor(QObject):
         return json
 
     def cleanResponseList(self):
-        print('cleaning up list')
-        # listLength = len(jsonList)
-        # iteration = 0
-        responses_clean = []
-        #weird bug here
-        if(self.jsonList == None):
-            print('Time travel bug workaround triggered')
-            return
-        for x in self.jsonList:
-            try:
+        if(self.enablePP):
+            print('cleaning up list')
+            # listLength = len(jsonList)
+            # iteration = 0
+            responses_clean = []
+            #weird bug here
+            if(self.jsonList == None):
+                print('Time travel bug workaround triggered')
+                return
+            for x in self.jsonList:
                 x = self.__cleanResponse(x)
-            except KeyError:
-                print('Key Error: ', x)
-            #only include posts with text content
-            if (x['content_text']):
-                responses_clean.append(x)
-            # iteration += 1
-            # self.cleanProgressSignal.emit(iteration / listLength) #possible bottleneck?
+                #only include posts with text content
+                if (x['content_text']):
+                    responses_clean.append(x)
+                # iteration += 1
+                # self.cleanProgressSignal.emit(iteration / listLength) #possible bottleneck?
+        else:
+            responses_clean = self.jsonList
+            print('Skipping post processing')
 
         self.cleanCompleteSignal.emit()
         if(len(responses_clean) > self.targetPostCount):
-            self.__dumpJsonAry(responses_clean[:self.targetPostCount])
+            self.__dumpJsonList(responses_clean[:self.targetPostCount])
         else:
-            self.__dumpJsonAry(responses_clean)
+            self.__dumpJsonList(responses_clean)
+
+#TODO: some sort of inheritance maybe?
+class AdditionalPostProcessor(QObject):
+        cleanCompleteSignal = pyqtSignal()
+        dumpCompleteSignal = pyqtSignal()
+
+        def __init__(self):
+            super(AdditionalPostProcessor, self).__init__()
+            self.saveLocation = None
+            self.jsonList = None
+            self.targetPostCount = None     #added for compatibility reasons
+            self.enablePP = True
+
+        def __processComplete(self):
+            self.saveLocation = None
+            self.jsonList = None
+            self.targetPostCount = None
+            self.enablePP = None
+            self.dumpCompleteSignal.emit()
+
+        def __dumpJsonList(self, jsons):
+            print('dumping file to ', self.saveLocation)
+            file = open(self.saveLocation, 'w', encoding='utf8')
+            json.dump(jsons, file, indent=4, sort_keys=True, ensure_ascii=False)
+            file.close()
+
+        def __dumpCsv(self, data):
+            filename, _ = os.path.splitext(self.saveLocation)
+            filename += '.csv'
+            with open(filename, 'w', encoding='utf-8', newline='') as csvfile:
+                fieldnames = ['id', 'name', 'slug', 'count', 'link']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                csvRow = {}
+                for x in data:
+                    csvRow['id'] = x['id']
+                    csvRow['name'] = x['name']
+                    csvRow['slug'] = x['slug']
+                    csvRow['count'] = x['count']
+                    csvRow['link'] = x['link']
+                    writer.writerow(csvRow)
+            print('Also created csv file {}'.format(filename))
+
+        # TODO might want to catch KeyError
+        def __cleanResponse(self, json):
+            del json['_links']
+            del json['meta']
+            del json['taxonomy']
+            del json['description']
+            if 'parent' in json:
+                del json['parent']
+            return json
+
+        def cleanResponseList(self):
+            responses_clean = []
+            #weird bug here
+            if(self.jsonList == None):
+                print('Time travel bug workaround triggered - additional PP')
+                return
+            for x in self.jsonList:
+                x = self.__cleanResponse(x)
+                responses_clean.append(x)
+            self.cleanCompleteSignal.emit()
+            self.__dumpJsonList(responses_clean)
+            self.__dumpCsv(responses_clean)
+            self.__processComplete()

@@ -20,6 +20,12 @@ class queryBuilder():
         self.catFilterRaw = None
         self.tagFilterRaw = None
 
+        self.searchTermEnabled = False
+        self.searchTerm = ''
+
+        self.postProcessEnabled = True
+        self.convertCsvEnabled = True
+
         self.appWindow = appWindow
         self.downloader = PostDownloader(appWindow)
         #outputFullPath also contains the filename itself
@@ -28,9 +34,15 @@ class queryBuilder():
     def startDownload(self):
         url = self.__buildURL()
         if(self.postLimitEnabled):
-            self.downloader.getJsonList(url, self.postLimitCount, self.outputFullPath)
+            self.downloader.getJsonList(url, self.postLimitCount, self.outputFullPath, self.postProcessEnabled)
         else:
-            self.downloader.getJsonList(url, -1, self.outputFullPath)
+            self.downloader.getJsonList(url, -1, self.outputFullPath, self.postProcessEnabled)
+
+    def downloadAdditional(self, option, outfile):
+        optionsDict = {'tags' : furl('https://tuftsdaily.com/wp-json/wp/v2/tags/'),
+                       'categories' : furl('https://tuftsdaily.com/wp-json/wp/v2/categories/')}
+        assert(option in optionsDict)
+        self.downloader.getAdditional(optionsDict[option], outfile, self.convertCsvEnabled)
 
     def __buildURL(self):
         url = furl('https://tuftsdaily.com/wp-json/wp/v2/posts/')

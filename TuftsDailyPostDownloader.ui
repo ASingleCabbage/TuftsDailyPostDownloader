@@ -455,6 +455,9 @@
               <property name="text">
                <string>Also convert to CSV</string>
               </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
            </layout>
@@ -994,7 +997,7 @@
    <sender>downloadCatButton</sender>
    <signal>clicked()</signal>
    <receiver>PostDownloader</receiver>
-   <slot>downloadCats()</slot>
+   <slot>downloadAdditional()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>437</x>
@@ -1010,7 +1013,7 @@
    <sender>downloadTagButton</sender>
    <signal>clicked()</signal>
    <receiver>PostDownloader</receiver>
-   <slot>downloadTags()</slot>
+   <slot>downloadAdditional()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>565</x>
@@ -1024,7 +1027,7 @@
   </connection>
   <connection>
    <sender>csvConvertCheckBox</sender>
-   <signal>clicked(bool)</signal>
+   <signal>toggled(bool)</signal>
    <receiver>PostDownloader</receiver>
    <slot>setCsvConvert()</slot>
    <hints>
@@ -1040,7 +1043,7 @@
   </connection>
   <connection>
    <sender>postProcessCheckBox</sender>
-   <signal>clicked(bool)</signal>
+   <signal>toggled(bool)</signal>
    <receiver>PostDownloader</receiver>
    <slot>setPostProcessing()</slot>
    <hints>
@@ -1051,6 +1054,38 @@
     <hint type="destinationlabel">
      <x>485</x>
      <y>485</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>searchTermGroup</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>PostDownloader</receiver>
+   <slot>setSearchTerm()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>27</x>
+     <y>235</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>37</x>
+     <y>482</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>searchTextEdit</sender>
+   <signal>textChanged()</signal>
+   <receiver>PostDownloader</receiver>
+   <slot>updateSearchTerm()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>256</x>
+     <y>308</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>253</x>
+     <y>483</y>
     </hint>
    </hints>
   </connection>
@@ -1073,5 +1108,8 @@
   <slot>downloadCats()</slot>
   <slot>setCsvConvert()</slot>
   <slot>setPostProcessing()</slot>
+  <slot>setSearchTerm()</slot>
+  <slot>updateSearchTerm()</slot>
+  <slot>downloadAdditional()</slot>
  </slots>
 </ui>

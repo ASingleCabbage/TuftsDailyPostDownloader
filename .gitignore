@@ -1,3 +1,4 @@
 #test output files
 *.json
+*.csv
 .DS_Store
